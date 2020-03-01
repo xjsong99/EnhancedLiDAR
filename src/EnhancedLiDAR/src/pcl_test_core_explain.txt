@@ -1,0 +1,77 @@
+#include "pcl_test_core.h"
+ 
+//构造函数
+PclTestCore::PclTestCore(ros::NodeHandle &nh){
+    sub_point_cloud_ = nh.subscribe("/iv_points",10, &PclTestCore::point_cb, this);  
+    //sub_point_cloud_ = nh.subscribe("/velodyne_points",10, &PclTestCore::point_cb, this);  
+    //这里的sub_point_cloud在pcl_test_core.h中的prviate
+ 
+    pub_filtered_points_ = nh.advertise<sensor_msgs::PointCloud2>("/filtered_points", 10);
+ 
+    ros::spin(); //回调函数
+}
+ 
+PclTestCore::~PclTestCore(){}
+void PclTestCore::Spin(){}
+ 
+void PclTestCore::point_cb(const sensor_msgs::PointCloud2ConstPtr & in_cloud_ptr){
+//定义了两个点云指针，声明存储原始数据与滤波后的数据的点云的格式
+    pcl::PointCloud<pcl::PointXYZ>::Ptr current_pc_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+    //原始：pcl::PointCloud<pcl::PointXYZI>::Ptr current_pc_ptr(new pcl::PointCloud<pcl::PointXYZI>);
+//pcl::PointCloud<pcl::PointXYZ>::Ptr （在这断开的） cloud_Ptr(new pcl::PointCloud<pcl::PointXYZ>);  
+//指的是pcl中指针和非指针的转换。其中new pcl::PointCloud<pcl::PointXYZ>为原始点云的数据格式。
+//在函数返回指针时，经常会出现不知道的错误，不用返回指针，直接得到PointXYZ，再将其转化为Ptr。
+    pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_pc_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+     //原始：pcl::PointCloud<pcl::PointXYZI>::Ptr filtered_pc_ptr(new pcl::PointCloud<pcl::PointXYZI>);
+//new pcl::PointCloud<pcl::PointXYZI>，存储滤波后的数据格式。
+ 
+    pcl::fromROSMsg(*in_cloud_ptr, *current_pc_ptr);//从rosMsg的in_cloud_ptr转化到pcl点云格式的current_pc_ptr
+// ros转化为PCL中的点云的数据格式，sensor_msgs::PointCloud2转pcl::PointCloud<pcl::PointXYZ> 
+ 
+    pcl::VoxelGrid<pcl::PointXYZ> vg;//VoxelGrid是一种滤波器
+//实例化滤波，vg为voxelgrid的缩写，前面全部的代替，为后面编程提供方便，相当于import numpy as np  np.xxx
+ 
+    vg.setInputCloud(current_pc_ptr); //设置输入的滤波
+    vg.setLeafSize(0.2f, 0.2f, 0.2f); //设置体素网格大小
+    vg.filter(*filtered_pc_ptr);      //存储滤波后的点云
+ 
+ 
+//再将滤波后的点云转换为ros下的数据格式发布出去。
+    sensor_msgs::PointCloud2 pub_pc;   //声明输出的点云格式。
+    pcl::toROSMsg(*filtered_pc_ptr, pub_pc);//将pcl点云格式转换为ros下的点云格式，pcl::PointCloud<pcl::PointXYZ>转sensor_msgs::PointCloud2
+    //第一个参数是滤波后的pcl xyz格式点云，第二个参数是抓换后的ros pointcloud2格式，之后发布就发布该点云。
+ 
+    pub_pc.header = in_cloud_ptr->header; 
+//在此将in_cloude_ptr的索引赋给pub_pc.header？？？这个没查到。
+ 
+    pub_filtered_points_.publish(pub_pc);   
+// pub_filtered_points_为之前建立的发布节点，在此为该node赋值。
+}
+ 
+ 
+//从这里以下参考sitwangmin博主，感谢！
+//作者：sitwangmin 
+//来源：CSDN 
+//原文：https://blog.csdn.net/u010284636/article/details/79214841 
+ 
+//ROS转PCL数据格式
+//sensor_msgs::PointCloud2转pcl::PCLPointCloud2 
+//pcl_conversions::toPCL(sensor_msgs::PointCloud2, pcl::PCLPointCloud2)
+ 
+//sensor_msgs::PointCloud2转pcl::PointCloud<pcl::PointXYZ> 
+//pcl::fromROSMsg (sensor_msgs::PointCloud2, pcl::PointCloud<pcl::PointXYZ>);
+ 
+//PCL转ROS数据
+//pcl::PCLPointCloud2转sensor_msgs::PointCloud2
+//pcl_conversions::fromPCL(pcl::PCLPointCloud2, sensor_msgs::PointCloud2);
+ 
+//pcl::PointCloud<pcl::PointXYZ>转sensor_msgs::PointCloud2
+//pcl::toROSMsg (pcl::PointCloud<pcl::PointXYZ>,sensor_msgs::PointCloud2);
+ 
+//PCL中数据互转 
+//pcl::PCLPointCloud2转pcl::PointCloud <pcl::PointXYZ>
+//pcl::fromPCLPointCloud2(pcl::PCLPointCloud2,pcl::PointCloud<pcl::PointXYZ>);
+ 
+//pcl::PointCloud<pcl::PointXYZ>转pcl::PCLPointCloud2
+//pcl::toPCLPointCloud2(pcl::PointCloud<pcl::PointXYZ>, pcl::PCLPointCloud2);
+ 

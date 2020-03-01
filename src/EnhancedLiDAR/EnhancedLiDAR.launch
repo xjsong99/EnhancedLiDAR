@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="EnhancedLiDAR" type="EnhancedLiDAR_node" name="EnhancedLiDAR_node" output="screen"/>
+</launch>

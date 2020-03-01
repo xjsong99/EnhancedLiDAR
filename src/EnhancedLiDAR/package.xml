@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>EnhancedLiDAR</name>
+  <version>0.0.1</version>
+  <description>The EnhancedLiDAR package</description>
+
+  <maintainer email="songxj@bjtu.edu.cn">song</maintainer>
+
+  <license>BJTU</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
+  <exec_depend>roscpp</exec_depend>  
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+<!--
+原来是，自己改成以上三行了，不然catkin失败
+  <run_depend>roscpp</run_depend>  
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>pcl_ros</run_depend>
+-->
+
+
+</package>

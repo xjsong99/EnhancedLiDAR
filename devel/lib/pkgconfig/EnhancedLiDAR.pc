@@ -1,0 +1,8 @@
+prefix=/home/song/EnhancedLiDAR/devel
+
+Name: EnhancedLiDAR
+Description: Description of EnhancedLiDAR
+Version: 0.0.1
+Cflags: -I/home/song/EnhancedLiDAR/src/EnhancedLiDAR/include
+Libs: -L/home/song/EnhancedLiDAR/devel/lib 
+Requires: roscpp sensor_msgs pcl_ros

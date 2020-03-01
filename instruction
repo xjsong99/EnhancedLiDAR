@@ -1,0 +1,15 @@
+编译方法：
+cd EnhancedLiDAR
+
+catkin_make
+
+source devel/setup.bash
+
+roslaunch EnhancedLiDAR EnhancedLiDAR.launch
+
+//rosbag play --clock test.bag
+
+rosrun rviz rviz
+
+配置Rviz的Frame为velodyne（失败尝试base_link），并且add原始点云和过滤以后的点云的display
+
