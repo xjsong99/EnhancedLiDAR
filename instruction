@@ -18,8 +18,8 @@ rosrun rviz rviz
 GitHub提交方法：
 cd EnhancedLiDAR
 
-git add .
+git add .      				//将要提交的文件暂存到本地仓库。
 
-(proxychains) git commit -m "Add existing file"
+git commit -m "Add existing file"     	//提交暂存在本地仓库中的文件。
 
-(proxychains) git push origin master
+(proxychains) git push origin master	//推送更改（本地仓库中）到 GitHub。
