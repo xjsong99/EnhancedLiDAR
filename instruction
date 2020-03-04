@@ -14,6 +14,14 @@ rosrun rviz rviz
 配置Rviz的Frame为velodyne（失败尝试base_link），并且add原始点云和过滤以后的点云的display
 
 
+关于编译的方法：
+https://blog.csdn.net/AdamShan/article/details/82901295
+https://blog.csdn.net/qq_40297851/article/details/84567056
+
+
+关于marker的用法：
+https://www.jianshu.com/p/6469314a9011
+
 
 GitHub提交方法：
 cd EnhancedLiDAR

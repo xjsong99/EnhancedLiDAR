@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+
 const double eps = 1e-8;
 inline int sgn(double x)
 {
@@ -8,6 +9,7 @@ inline int sgn(double x)
     if(x < 0) return -1;
     else return 1;
 }
+
 struct Point3{
     double x, y, z;
     Point3 (double _x = 0,double _y = 0,double _z = 0)
@@ -77,7 +79,7 @@ struct Plane
         double y = o * (u.s - a);
         double d = x - y;
         if(sgn(d) == 0) return 0;
-        p = ((u.e * x) - (u.e * y)) / d;
+        p = ((u.s * x) - (u.e * y)) / d;
         return 1;
     }
     //判断点在三角形内部
@@ -95,6 +97,11 @@ struct Plane
 
         float inverDeno = dot00 * dot11 - dot01 * dot01;
 
+        float x = dot11 * dot02 - dot01 * dot12;
+        float y = dot00 * dot12 - dot01 * dot02;
+        return sgn(x) >= 0 && sgn(y) >= 0 && sgn(x + y - inverDeno) <= 0;
+
+        /*
         float u = (dot11 * dot02 - dot01 * dot12) / inverDeno;
         if(u < 0 || u > 1) return false;
 
@@ -102,5 +109,7 @@ struct Plane
         if(v < 0 || v > 1) return false;
 
         return sgn(u + v - 1) <= 0;
+        */
+
     }
 };
