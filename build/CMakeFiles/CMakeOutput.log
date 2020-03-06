@@ -582,3 +582,55 @@ Linking C executable cmTC_1b0e8
 make[1]: Leaving directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
 
 
+Performing C SOURCE FILE Test OpenMP_FLAG_DETECTED succeeded with the following output:
+Change Dir: /home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_6b2c0/fast"
+make[1]: Entering directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_6b2c0.dir/build.make CMakeFiles/cmTC_6b2c0.dir/build
+make[2]: Entering directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_6b2c0.dir/src.c.o
+/usr/bin/cc    -DOpenMP_FLAG_DETECTED -fopenmp   -o CMakeFiles/cmTC_6b2c0.dir/src.c.o   -c /home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_6b2c0
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6b2c0.dir/link.txt --verbose=1
+/usr/bin/cc   -DOpenMP_FLAG_DETECTED -fopenmp    CMakeFiles/cmTC_6b2c0.dir/src.c.o  -o cmTC_6b2c0 -rdynamic 
+make[2]: Leaving directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+#include <omp.h>
+int main() {
+#ifdef _OPENMP
+  return 0;
+#else
+  breaks_on_purpose
+#endif
+}
+
+Performing C++ SOURCE FILE Test OpenMP_FLAG_DETECTED succeeded with the following output:
+Change Dir: /home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ef814/fast"
+make[1]: Entering directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_ef814.dir/build.make CMakeFiles/cmTC_ef814.dir/build
+make[2]: Entering directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ef814.dir/src.cxx.o
+/usr/bin/c++     -DOpenMP_FLAG_DETECTED -fopenmp   -o CMakeFiles/cmTC_ef814.dir/src.cxx.o -c /home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_ef814
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ef814.dir/link.txt --verbose=1
+/usr/bin/c++    -DOpenMP_FLAG_DETECTED -fopenmp    CMakeFiles/cmTC_ef814.dir/src.cxx.o  -o cmTC_ef814 -rdynamic 
+make[2]: Leaving directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/song/EnhancedLiDAR/build/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+#include <omp.h>
+int main() {
+#ifdef _OPENMP
+  return 0;
+#else
+  breaks_on_purpose
+#endif
+}
+

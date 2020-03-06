@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <dirent.h>
 #include <string>
+#include <omp.h>
 
 #include "EnhancedLiDAR_core.h"
 #include "ground_remove_RANSAC.h"
@@ -556,7 +557,7 @@ void OrganizeTool::denser(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
                 if(nearest_point_cloud_ptr->size() >= 3)//点云中的点数>=3,可以组成三角形
                 {
                     surface_build(nearest_point_cloud_ptr, triangles_ptr);
-                    test_view(triangles_ptr);
+                    //test_view(triangles_ptr);
                     test_num[2]++;
                 }
             }
@@ -565,11 +566,8 @@ void OrganizeTool::denser(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
             {
                 test_num[3]++;
 
-                //if(v == 205 && u == 380)
-                //    test_view(triangles_ptr);
-
                 predicted_point = find_exact_coord(triangles_ptr, v, u);
-                if(predicted_point.x!=0 || predicted_point.y!=0 || predicted_point.z!=0)
+                if(sgn(predicted_point.x)!=0 || sgn(predicted_point.y)!=0 || sgn(predicted_point.z)!=0)
                     output_cloud_ptr->push_back(predicted_point),test_num[4]++;
             }
         }
@@ -597,13 +595,14 @@ void OrganizeTool::matrix_dot(double *A,double *X)
 
 void OrganizeTool::get_pseudo(double *depth_image,pcl::PointCloud<pcl::PointXYZI>::Ptr pseudo_cloud_ptr)
 {
-    pcl::PointXYZI search_point;//搜索的中心点
-    search_point.intensity = 0;
-    pcl::PointXYZ tmp_Point;
+    
     Point3 tmp_Point3;
 
-    double axis[4][1];
+    pcl::PointXYZI search_point;
+    search_point.intensity = 0;
+
     for (int v = 0; v < row_of_depth_image; v++)
+    {
         for (int u = 0; u < col_of_depth_image; u++)
         {
             tmp_Point3 = From2Dto3D(v, u, *(depth_image + v * 1300 + u) );
@@ -613,8 +612,8 @@ void OrganizeTool::get_pseudo(double *depth_image,pcl::PointCloud<pcl::PointXYZI
             search_point.z = tmp_Point3.z;
 
             pseudo_cloud_ptr->push_back(search_point);
-
         }
+    }
 
     return;
 }
@@ -697,15 +696,28 @@ void PclTestCore::workFromFile()
     float *data = (float*)malloc(1000000*sizeof(float));
     FILE *stream;
 
+    /*
     std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0101_sync/velodyne_points/data/";
     std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0101_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/";
+    OrgTool.row_of_depth_image = 375;
+    OrgTool.col_of_depth_image = 1242;
+    */
+
+    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/velodyne_points/data/";
+    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/predicted_depth/";
+    std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/";
+    OrgTool.row_of_depth_image = 374;
+    OrgTool.col_of_depth_image = 1238;
     
     /*
     std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0042_sync/velodyne_points/data/";
     std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0042_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/";
+    OrgTool.row_of_depth_image = 376;
+    OrgTool.col_of_depth_image = 1241;
     */
+   
     OrgTool.read_calib(calib_file);
 
     struct dirent **namelist_bin,**namelist_txt;//文件名list
@@ -755,7 +767,7 @@ void PclTestCore::workFromFile()
         fclose(stream);
 
         OrgTool.eraseNAN(original_pc_ptr);//剔除NAN点
-        OrgTool.eraseOutlier(original_pc_ptr);//剔除离群点（地面以下的点，打到自身车体的点）
+        //OrgTool.eraseOutlier(original_pc_ptr);//剔除离群点（地面以下的点，打到自身车体的点）
 
         stream = fopen ((depth_file+std::string(namelist_txt[file_index]->d_name)).c_str(),"r");
         for (int i = 0; i < OrgTool.row_of_depth_image; i++)
@@ -940,7 +952,7 @@ void PclTestCore::test_one_frame()
     pub_triangle.header.frame_id = "/velodyne";
     */
 
-    //输出曲面重建的曲面 和 (v=205,u=380)像素对应的射线
+    //输出曲面重建的曲面 和 (v=296,u=150)像素对应的射线
     OrgTool.pub_surface.ns = "my_namespace";
     OrgTool.pub_surface.id = 0;
     OrgTool.pub_surface.type = visualization_msgs::Marker::TRIANGLE_LIST;
@@ -960,13 +972,12 @@ void PclTestCore::test_one_frame()
     OrgTool.pub_line.color.a = 1.0;
     OrgTool.pub_line.color.b = 1.0;
     OrgTool.pub_line.header.frame_id = "/velodyne";
-    Point3 line_start = OrgTool.From2Dto3D(205, 380, 5), line_end = OrgTool.From2Dto3D(205, 380, 100);
+    Point3 line_start = OrgTool.From2Dto3D(296, 150, 8), line_end = OrgTool.From2Dto3D(296, 150, 100);
     geometry_msgs::Point p;
     p.x = line_start.x; p.y = line_start.y; p.z = line_start.z;
-    OrgTool.pub_line.points.push_back(p);
+    //OrgTool.pub_line.points.push_back(p);
     p.x = line_end.x; p.y = line_end.y; p.z = line_end.z;
-    OrgTool.pub_line.points.push_back(p);
-    
+    //OrgTool.pub_line.points.push_back(p);
 
     time_t last_time=0;
 

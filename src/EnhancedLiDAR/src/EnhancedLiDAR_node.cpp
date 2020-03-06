@@ -1,4 +1,6 @@
 #include "EnhancedLiDAR_core.h"
+
+#include "geometry.h"
  
 int main(int argc, char **argv)   //main函数，节点入口
 {

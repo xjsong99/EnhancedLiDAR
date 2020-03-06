@@ -61,6 +61,8 @@ dirent.h
 -
 string
 -
+omp.h
+-
 EnhancedLiDAR_core.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_core.h
 ground_remove_RANSAC.h
@@ -69,6 +71,8 @@ ground_remove_RANSAC.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_node.cpp
 EnhancedLiDAR_core.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_core.h
+geometry.h
+/home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/geometry.h
 
 /opt/ros/kinetic/include/boost_161_condition_variable.h
 boost/thread/detail/platform.hpp

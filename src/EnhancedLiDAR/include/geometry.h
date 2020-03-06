@@ -96,9 +96,13 @@ struct Plane
         float dot12 = v1 * v2;
 
         float inverDeno = dot00 * dot11 - dot01 * dot01;
+        
+        if(sgn(inverDeno) == 0)
+            return false;
 
         float x = dot11 * dot02 - dot01 * dot12;
         float y = dot00 * dot12 - dot01 * dot02;
+
         return sgn(x) >= 0 && sgn(y) >= 0 && sgn(x + y - inverDeno) <= 0;
 
         /*
