@@ -26,4 +26,3 @@ It is the final result pointcloud (only objects) with higher density.
 The color points come from original object pointcloud while the white points represent the denser points produced by this algorithm.
 ![denser1](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/fusion_point.png)
 ![denser1](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/fusion_point2.png)
-
