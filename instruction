@@ -1,27 +1,28 @@
 ----------------------------------Enhanced_LiDAR-------------------------------------------------
-编译方法：
-cd EnhancedLiDAR
+【编译方法】：
+1.cd EnhancedLiDAR
 
-catkin_make
+2.catkin_make
 
-source devel/setup.bash
+3.source devel/setup.bash
 
-roslaunch EnhancedLiDAR EnhancedLiDAR.launch
+4.某一个场景/Test_on_frame: roslaunch EnhancedLiDAR EnhancedLiDAR.launch
+  测试集生成              : roslaunch EnhancedLiDAR EnhancedLiDAR.launch my_args:="file"
 
 //rosbag play --clock test.bag
 
-rosrun rviz rviz
+5.rosrun rviz rviz
 
-配置Rviz的Frame为velodyne（失败尝试base_link），并且add原始点云和过滤以后的点云的display
+6.配置Rviz的Frame为velodyne（失败尝试base_link），并且add原始点云和过滤以后的点云的display
 
-关于编译的方法：
+【关于编译的方法】：
 https://blog.csdn.net/AdamShan/article/details/82901295
 https://blog.csdn.net/qq_40297851/article/details/84567056
 
-关于marker的用法：
+【关于marker的用法】：
 https://www.jianshu.com/p/6469314a9011
 
-GitHub提交方法：
+【GitHub提交方法】：
 cd EnhancedLiDAR
 
 git add .      				//将要提交的文件暂存到本地仓库。
@@ -33,16 +34,17 @@ git commit -m "Add existing file"     	//提交暂存在本地仓库中的文件
 
 ----------------------------------DeepPruner-------------------------------------------------
 生成视差图
+conda activate python2
 python submission_kitti.py \
 --loadmodel /home/song/DeepPruner/deeppruner/DeepPruner-best-kitti.tar \
---save_dir /home/song/DeepPruner/deeppruner/test_directory/predicted_depth \
+--save_dir /home/song/DeepPruner/deeppruner/test_directory/predicted_disp \
 --datapath /home/song/DeepPruner/deeppruner/test_directory
 -------------------------------------------------------------------------------------------------
 
 ----------------------------------pseudo-LiDAR-------------------------------------------------
 生成深度图（由视差图）
 python ./preprocessing/generate_depth.py  \
-    --calib_dir /media/song/程序磁盘/mouse/PSMNet/2011_09_29/calib.txt \
-    --save_dir /media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/predicted_depth/ \
-    --disparity_dir /media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/predicted_disp \
-    --start_index 604
+    --calib_dir /media/song/程序磁盘/3D_KITTI/data_object_calib/testing/calib/ \
+    --save_dir /media/song/程序磁盘/3D_KITTI/predicted_depth/testing/ \
+    --disparity_dir /media/song/程序磁盘/3D_KITTI/predicted_disp/testing/ \
+    --start_index 534

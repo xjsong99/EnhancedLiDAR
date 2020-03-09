@@ -54,7 +54,7 @@ class OrganizeTool
       {-6.166020e-4,	-9.998901e-1,	1.480755e-2,	-7.228590e-2},
       {0,0,0,1}};
     */
-
+    /*
     //2011_09_29
     double R00_inv[4][4] =  
     {{ 9.999477623386955e-01,    -9.806938410737948e-03,     2.873828123230253e-03,                         0},
@@ -66,7 +66,7 @@ class OrganizeTool
      {-9.999694232695880e-01,     1.032122841965585e-03,     7.753097642421263e-03,    -5.139645452231175e-03},
      {-1.014302253796026e-03,    -9.999968720211324e-01,     2.301990468729539e-03,    -6.263302502186824e-02},
      {                     0,                         0,                         0,                         1}};
-
+    */
     /*
     //2011_10_03
     double R00_inv[4][4] =      
@@ -81,6 +81,7 @@ class OrganizeTool
      {                   0  ,                      0,                     0,                      1}};
     */
     double fu, fv, cu, cv, bx, by;
+    double R00_inv[4][4], T_inv[4][4];
 
   public:
     int row_of_depth_image, col_of_depth_image;//深度图行列数
@@ -96,6 +97,7 @@ class OrganizeTool
     inline bool available_point(Point3 p);
 
     void read_calib(std::string calib_file);
+    void read_calib_submission(FILE *stream);
     void order(pcl::PointCloud<pcl::PointXYZI>::Ptr unorganised_cloud_ptr,
                pcl::PointCloud<pcl::PointXYZI>::Ptr organised_cloud_ptr);
     void showOneRay(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr);
@@ -135,8 +137,6 @@ class PclTestCore
     void point_cb(const sensor_msgs::PointCloud2ConstPtr& in_cloud);
 //void point_cb是声明一个函数，这里面设置了一个数据类型为sensor_msgs::PointCloud2ConstPtr& in_cloud形参，const在这里修饰函数中的参数。将点云格式sensor_mgs/pointcloud2转换为pcl/pointcloud
 
-    static int fileNameFilter_bin(const struct dirent *cur);
-    static int fileNameFilter_txt(const struct dirent *cur);
     void workFromFile();
     void test_one_frame();
 
@@ -149,4 +149,6 @@ class PclTestCore
     PclTestCore(ros::NodeHandle &nh);    
     ~PclTestCore();
     void Spin();
+    static int fileNameFilter_bin(const struct dirent *cur);
+    static int fileNameFilter_txt(const struct dirent *cur);
 };

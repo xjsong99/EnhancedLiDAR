@@ -5,6 +5,9 @@
 #include <dirent.h>
 #include <string>
 #include <omp.h>
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "EnhancedLiDAR_core.h"
 #include "ground_remove_RANSAC.h"
@@ -104,6 +107,121 @@ void OrganizeTool::read_calib(std::string calib_file)
     by = a * pow(10, flag == '-' ? -b : b) / (-fv);
 
     fclose(cam_to_cam);
+
+    return;
+}
+
+void OrganizeTool::read_calib_submission(FILE *stream)
+{
+    char buf[1001];
+
+    //位置指针移动到P2所在行
+    fgets(buf, 1000, stream);
+    fgets(buf, 1000, stream);
+
+    //位置指针向后移动4个字符
+    fseek(stream, 4, SEEK_CUR);
+
+    double a;
+    int b;
+    char flag;
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+    fu = a * pow(10, flag == '-' ? -b : b);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+    cu = a * pow(10, flag == '-' ? -b : b);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+    bx = a * pow(10, flag == '-' ? -b : b) / (-fu);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+    fv = a * pow(10, flag == '-' ? -b : b);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+    cv = a * pow(10, flag == '-' ? -b : b);
+
+    fscanf(stream, "%[^e]", buf);
+    fscanf(stream, "e%c", &flag);
+    fscanf(stream, "%d",&b);
+    sscanf(buf, "%lf", &a);
+    by = a * pow(10, flag == '-' ? -b : b) / (-fv);
+    
+    //移动到R0_rect所在行
+    fgets(buf, 1000, stream);
+    fgets(buf, 1000, stream);
+
+    //位置指针向后移动9个字符
+    fseek(stream, 9, SEEK_CUR);
+
+    //读入R0_rect
+    double matrix44[4][4];
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            fscanf(stream, "%[^e]", buf);
+            fscanf(stream, "e%c", &flag);
+            fscanf(stream, "%d",&b);
+            sscanf(buf, "%lf", &a);
+            matrix44[i][j] = a * pow(10, flag == '-' ? -b : b);
+        }
+        matrix44[i][3] = matrix44[3][i] = 0;
+    }
+    matrix44[3][3] = 1;
+    cv::Mat AA(4, 4, CV_64FC1, matrix44);
+    cv::Mat BB = AA.inv();
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            R00_inv[i][j] = *(double *)(BB.ptr<double>(i) + j);
+
+    //位置指针向后移动16个字符
+    fseek(stream, 16, SEEK_CUR);
+
+    //读入Tr_velo_to_cam
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            fscanf(stream, "%[^e]", buf);
+            fscanf(stream, "e%c", &flag);
+            fscanf(stream, "%d",&b);
+            sscanf(buf, "%lf", &a);
+            matrix44[i][j] = a * pow(10, flag == '-' ? -b : b);
+        }
+        matrix44[3][i] = 0;
+    }
+    matrix44[3][3] = 1;
+    cv::Mat CC(4, 4, CV_64FC1, matrix44);
+    BB = AA.inv();
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            T_inv[i][j] = *(double *)(BB.ptr<double>(i) + j);
 
     return;
 }

@@ -1,3 +1,4 @@
 <launch>
-    <node pkg="EnhancedLiDAR" type="EnhancedLiDAR_node" name="EnhancedLiDAR_node" output="screen"/>
+    <arg name="my_args" default="rviz"/>
+    <node pkg="EnhancedLiDAR" type="EnhancedLiDAR_node" name="EnhancedLiDAR_node" args="$(arg my_args)" output="screen"/>
 </launch>
