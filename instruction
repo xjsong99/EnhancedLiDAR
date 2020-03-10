@@ -7,7 +7,7 @@
 3.source devel/setup.bash
 
 4.某一个场景/Test_on_frame: roslaunch EnhancedLiDAR EnhancedLiDAR.launch
-  测试集生成              : roslaunch EnhancedLiDAR EnhancedLiDAR.launch my_args:="file"
+  测试集生成              : roslaunch EnhancedLiDAR EnhancedLiDAR.launch my_args:="file 775"  //start_index=775
 
 //rosbag play --clock test.bag
 

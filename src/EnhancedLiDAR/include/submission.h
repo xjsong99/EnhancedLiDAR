@@ -3,7 +3,7 @@
 #include "EnhancedLiDAR_core.h"
 #include "ground_remove_RANSAC.h"
 
-void submission()
+void submission(int start_index)
 {
     OrganizeTool OrgTool;
 
@@ -28,7 +28,7 @@ void submission()
 
     printf("num_of_file=%d\n",num_of_file);
 
-    for (int file_index = 0; file_index < num_of_file; file_index++)
+    for (int file_index = start_index; file_index < num_of_file; file_index++)
     {
         printf("file_index=%d\n",file_index);
 

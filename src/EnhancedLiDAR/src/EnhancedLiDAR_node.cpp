@@ -16,7 +16,9 @@ int main(int argc, char **argv)   //main函数，节点入口
     }
     else if(argv[1][0]=='f') //file 输出
     {
-        submission();
+        int start_index;
+        sscanf(argv[2], "%d", &start_index);
+        submission(start_index);
     }
     else
         printf("[ Args Error ! ]\n");
