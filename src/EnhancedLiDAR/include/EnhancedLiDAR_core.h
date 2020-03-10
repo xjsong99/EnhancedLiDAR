@@ -106,8 +106,11 @@ class OrganizeTool
                        pcl::PointCloud<pcl::PointXYZI>::Ptr ground_cloud_ptr,
                        pcl::PointCloud<pcl::PointXYZI>::Ptr object_cloud_ptr);
     void denser(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
-                           pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud_ptr,
-                           double *depth_image);
+                pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud_ptr,
+                double *depth_image);
+    void denser_OpenMP(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
+                       pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud_ptr,
+                       double *depth_image);
     void get_pseudo(double *depth_image,pcl::PointCloud<pcl::PointXYZI>::Ptr pseudo_cloud_ptr);
     void surface_build(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr, pcl::PolygonMesh::Ptr triangles_ptr);
     void eraseNAN(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr);

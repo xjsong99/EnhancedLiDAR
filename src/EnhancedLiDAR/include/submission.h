@@ -76,7 +76,7 @@ void submission()
 
         ground_remove_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);
 
-        OrgTool.denser(object_pc_ptr, dense_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
+        OrgTool.denser_OpenMP(object_pc_ptr, dense_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
 
         *object_pc_ptr = *object_pc_ptr + *dense_pc_ptr;
         stream = fopen ((dense_object_file+std::string(namelist_cloud[file_index]->d_name)).c_str(),"wb");

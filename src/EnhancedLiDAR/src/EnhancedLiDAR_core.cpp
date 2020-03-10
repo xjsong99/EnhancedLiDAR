@@ -697,6 +697,88 @@ void OrganizeTool::denser(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
     return;
 }
 
+void OrganizeTool::denser_OpenMP(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
+                                 pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud_ptr,
+                                 double *depth_image)
+{
+
+    #pragma omp parallel for num_threads(32)
+    for (int v = 0; v < row_of_depth_image; v += 2)
+    {
+        pcl::KdTreeFLANN<pcl::PointXYZI> kdtree;
+        std::vector<int> indices;//记录搜索到的点的下标
+        std::vector<float> sqr_distance; //记录搜索到的点的距离
+        kdtree.setInputCloud(input_cloud_ptr); //设置kdtree对应的点云
+        
+        int return_nn; //实际返回的搜索到的点数
+
+        pcl::PointXYZI search_point;//搜索的中心点
+        search_point.intensity = 0;
+
+        pcl::PointXYZI last_search_point;//上一个搜索的中心点
+        last_search_point.x = last_search_point.y = last_search_point.z = last_search_point.intensity = 0;
+
+        pcl::PointXYZI predicted_point;
+        pcl::PointXYZ tmp_Point;
+
+        pcl::PointCloud<pcl::PointXYZ>::Ptr nearest_point_cloud_ptr;//提取的临近点
+
+        Point3 temp_Point;
+
+        pcl::PolygonMesh::Ptr triangles_ptr(new pcl::PolygonMesh);//曲面重建完后的三角形
+        triangles_ptr->polygons.clear();
+
+        for (int u = 0; u < col_of_depth_image;u += 2)
+        {
+            temp_Point = From2Dto3D(v, u, *(depth_image + v * 1300 + u));
+
+            if(!available_point(temp_Point)) continue;
+            if(temp_Point.z > 1.5) continue;
+
+            search_point.x = temp_Point.x;
+            search_point.y = temp_Point.y;
+            search_point.z = temp_Point.z;
+            
+            //printf("(%lf,%lf,%lf)\n",search_point.x,search_point.y,search_point.z);
+
+            //使用曲面重建的计算方法
+            if(compute_distance(search_point,last_search_point)>radius)//与上一次搜索中心点的距离超过kdtree搜索半径,重建曲面
+            {
+                last_search_point = search_point;
+
+                nearest_point_cloud_ptr = (pcl::PointCloud<pcl::PointXYZ>::Ptr) new pcl::PointCloud<pcl::PointXYZ>;//新建近邻点点云
+
+                triangles_ptr = (pcl::PolygonMesh::Ptr) new pcl::PolygonMesh;//新建曲面三角形
+                triangles_ptr->polygons.clear();
+
+                return_nn = kdtree.radiusSearch(search_point, radius, indices, sqr_distance, max_nn);
+
+                for (int k = 0; k < return_nn; k++)
+                {
+                    tmp_Point.x=input_cloud_ptr->points.at(indices[k]).x;
+                    tmp_Point.y=input_cloud_ptr->points.at(indices[k]).y;
+                    tmp_Point.z=input_cloud_ptr->points.at(indices[k]).z;
+                    nearest_point_cloud_ptr->push_back(tmp_Point);
+                }
+
+                if(nearest_point_cloud_ptr->size() >= 3)//点云中的点数>=3,可以组成三角形
+                {
+                    surface_build(nearest_point_cloud_ptr, triangles_ptr);
+                }
+            }
+
+            if(triangles_ptr->polygons.size() > 0)
+            {
+                predicted_point = find_exact_coord(triangles_ptr, v, u);
+                if(sgn(predicted_point.x)!=0 || sgn(predicted_point.y)!=0 || sgn(predicted_point.z)!=0)
+                    output_cloud_ptr->push_back(predicted_point);
+            }
+        }
+    }
+
+    return;
+}
+
 void OrganizeTool::matrix_dot(double *A,double *X)
 {
     double Y[4][1];
