@@ -771,7 +771,10 @@ void OrganizeTool::denser_OpenMP(pcl::PointCloud<pcl::PointXYZI>::Ptr input_clou
             {
                 predicted_point = find_exact_coord(triangles_ptr, v, u);
                 if(sgn(predicted_point.x)!=0 || sgn(predicted_point.y)!=0 || sgn(predicted_point.z)!=0)
+                {
+                    #pragma omp critical
                     output_cloud_ptr->push_back(predicted_point);
+                }
             }
         }
     }
