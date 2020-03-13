@@ -35,6 +35,12 @@ pcl/surface/gp3.h
 -
 pcl/visualization/pcl_visualizer.h
 -
+image_transport/image_transport.h
+-
+cv_bridge/cv_bridge.h
+-
+opencv2/highgui/highgui.hpp
+-
 geometry.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/include/geometry.h
 
@@ -72,12 +78,6 @@ dirent.h
 string
 -
 omp.h
--
-image_transport/image_transport.h
--
-cv_bridge/cv_bridge.h
--
-opencv2/highgui/highgui.hpp
 -
 EnhancedLiDAR_core.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_core.h

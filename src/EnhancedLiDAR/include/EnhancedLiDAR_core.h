@@ -23,6 +23,10 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include <image_transport/image_transport.h>
+#include <cv_bridge/cv_bridge.h>
+#include <opencv2/highgui/highgui.hpp>
+
 #include "geometry.h"
 
 class OrganizeTool
@@ -154,4 +158,5 @@ class PclTestCore
     void Spin();
     static int fileNameFilter_bin(const struct dirent *cur);
     static int fileNameFilter_txt(const struct dirent *cur);
+    static int fileNameFilter_png(const struct dirent *cur);
 };

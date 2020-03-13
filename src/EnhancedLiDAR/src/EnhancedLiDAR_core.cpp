@@ -5,9 +5,6 @@
 #include <dirent.h>
 #include <string>
 #include <omp.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
-#include <opencv2/highgui/highgui.hpp>
 
 #include "EnhancedLiDAR_core.h"
 #include "ground_remove_RANSAC.h"
@@ -890,6 +887,14 @@ int PclTestCore::fileNameFilter_txt(const struct dirent *cur)
 {
     std::string str(cur->d_name);
     if(str.find(".txt")!=std::string::npos)
+        return 1;
+    return 0;
+}
+
+int PclTestCore::fileNameFilter_png(const struct dirent *cur)
+{
+    std::string str(cur->d_name);
+    if(str.find(".png")!=std::string::npos)
         return 1;
     return 0;
 }

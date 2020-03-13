@@ -7,7 +7,7 @@
 3.source devel/setup.bash
 
 4.某一个场景/Test_on_frame: roslaunch EnhancedLiDAR EnhancedLiDAR.launch
-  测试集生成              : roslaunch EnhancedLiDAR EnhancedLiDAR.launch my_args:="file 775"  //start_index=775
+  数据集生成              : roslaunch EnhancedLiDAR EnhancedLiDAR.launch my_args:="file 775"  //start_index=775
 
 //rosbag play --clock test.bag
 
@@ -37,14 +37,14 @@ git commit -m "Add existing file"     	//提交暂存在本地仓库中的文件
 conda activate python2
 python submission_kitti.py \
 --loadmodel /home/song/DeepPruner/deeppruner/DeepPruner-best-kitti.tar \
---save_dir /home/song/DeepPruner/deeppruner/test_directory/predicted_disp \
+--save_dir /media/song/程序磁盘/3D_KITTI/predicted_disp/training \
 --datapath /home/song/DeepPruner/deeppruner/test_directory
 -------------------------------------------------------------------------------------------------
 
 ----------------------------------pseudo-LiDAR-------------------------------------------------
 生成深度图（由视差图）
 python ./preprocessing/generate_depth.py  \
-    --calib_dir /media/song/程序磁盘/3D_KITTI/data_object_calib/testing/calib/ \
-    --save_dir /media/song/程序磁盘/3D_KITTI/predicted_depth/testing/ \
-    --disparity_dir /media/song/程序磁盘/3D_KITTI/predicted_disp/testing/ \
-    --start_index 534
+    --calib_dir /media/song/程序磁盘/3D_KITTI/data_object_calib/training/calib/ \
+    --save_dir /media/song/程序磁盘/3D_KITTI/predicted_depth/training/ \
+    --disparity_dir /media/song/程序磁盘/3D_KITTI/predicted_disp/training/ \
+    --start_index 0

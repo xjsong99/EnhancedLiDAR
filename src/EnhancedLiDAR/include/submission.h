@@ -10,26 +10,28 @@ void submission(int start_index)
     float *data = (float*)malloc(1000000*sizeof(float));
     FILE *stream;
     
-    std::string cloud_file = "/media/song/程序磁盘/3D_KITTI/data_object_velodyne/testing/velodyne/";
-    std::string depth_file = "/media/song/程序磁盘/3D_KITTI/predicted_depth/testing/";
-    std::string calib_file = "/media/song/程序磁盘/3D_KITTI/data_object_calib/testing/calib/";
-    std::string dense_object_file = "/media/song/程序磁盘/3D_KITTI/dense_object_velodyne/testing/";
-    std::string dense_full_file = "/media/song/程序磁盘/3D_KITTI/dense_full_velodyne/testing/";
-    OrgTool.row_of_depth_image = 375;
-    OrgTool.col_of_depth_image = 1242;
-    
+    std::string cloud_file = "/media/song/程序磁盘/3D_KITTI/data_object_velodyne/training/velodyne/";
+    std::string image_file = "/media/song/程序磁盘/3D_KITTI/image_2/training/image_2/";
+    std::string depth_file = "/media/song/程序磁盘/3D_KITTI/predicted_depth/training/";
+    std::string calib_file = "/media/song/程序磁盘/3D_KITTI/data_object_calib/training/calib/";
+    std::string dense_object_file = "/media/song/程序磁盘/3D_KITTI/dense_object_velodyne/training/";
+    std::string dense_full_file = "/media/song/程序磁盘/3D_KITTI/dense_full_velodyne/training/";
 
-    struct dirent **namelist_cloud, **namelist_depth, **namelist_calib; //文件名list
+    struct dirent **namelist_cloud, **namelist_depth, **namelist_calib, **namelist_image; //文件名list
 
-    int num_of_file = std::min(scandir(cloud_file.c_str(), &namelist_cloud, PclTestCore::fileNameFilter_bin, alphasort),
-                      std::min(scandir(depth_file.c_str(), &namelist_depth, PclTestCore::fileNameFilter_txt, alphasort),
-                               scandir(calib_file.c_str(), &namelist_calib, PclTestCore::fileNameFilter_txt, alphasort))
-                               );
+    int num_of_file = scandir(cloud_file.c_str(), &namelist_cloud, PclTestCore::fileNameFilter_bin, alphasort);
+    scandir(depth_file.c_str(), &namelist_depth, PclTestCore::fileNameFilter_txt, alphasort);
+    scandir(calib_file.c_str(), &namelist_calib, PclTestCore::fileNameFilter_txt, alphasort);
+    scandir(image_file.c_str(), &namelist_image, PclTestCore::fileNameFilter_png, alphasort);
 
     printf("num_of_file=%d\n",num_of_file);
 
     for (int file_index = start_index; file_index < num_of_file; file_index++)
     {
+        cv::Mat Im = cv::imread((image_file+std::string(namelist_image[file_index]->d_name)).c_str());
+        OrgTool.row_of_depth_image = Im.rows;
+        OrgTool.col_of_depth_image = Im.cols;
+
         printf("file_index=%d\n",file_index);
 
         stream = fopen ((calib_file+std::string(namelist_calib[file_index]->d_name)).c_str(),"r");
