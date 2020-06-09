@@ -546,12 +546,20 @@ void OrganizeTool::test_view(pcl::PolygonMesh::Ptr triangles_ptr)
     //printf("num_of_polygon=%d\n", num_of_polygon);
     for (int i = 0; i < num_of_polygon; i++)
     {
+        if(tmp_cloud_ptr->points.at(triangles_ptr->polygons.at(i).vertices.at(0)).y < -4)
+            continue;
         for (int j = 0; j < 3; j++)
         {
             p.x = tmp_cloud_ptr->points.at(triangles_ptr->polygons.at(i).vertices.at(j)).x;
             p.y = tmp_cloud_ptr->points.at(triangles_ptr->polygons.at(i).vertices.at(j)).y;
             p.z = tmp_cloud_ptr->points.at(triangles_ptr->polygons.at(i).vertices.at(j)).z;
             pub_surface.points.push_back(p);
+            std_msgs::ColorRGBA colorRGB;
+            colorRGB.r = 1;
+            colorRGB.g = 1.0/9*fabs(p.x-4);
+            colorRGB.b = 0;
+            colorRGB.a = 1;
+            pub_surface.colors.push_back(colorRGB);
         }
     }
 
@@ -672,7 +680,7 @@ void OrganizeTool::denser(pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud_ptr,
                 if(nearest_point_cloud_ptr->size() >= 3)//点云中的点数>=3,可以组成三角形
                 {
                     surface_build(nearest_point_cloud_ptr, triangles_ptr);
-                    //test_view(triangles_ptr);
+                    test_view(triangles_ptr);
                     test_num[2]++;
                 }
             }
@@ -698,8 +706,8 @@ void OrganizeTool::denser_OpenMP(pcl::PointCloud<pcl::PointXYZI>::Ptr input_clou
                                  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud_ptr,
                                  double *depth_image)
 {
-
-    #pragma omp parallel for num_threads(32)
+    //服务器开64线程，本机开32线程
+    #pragma omp parallel for num_threads(32) 
     for (int v = 0; v < row_of_depth_image; v += 2)
     {
         pcl::KdTreeFLANN<pcl::PointXYZI> kdtree;
@@ -730,7 +738,9 @@ void OrganizeTool::denser_OpenMP(pcl::PointCloud<pcl::PointXYZI>::Ptr input_clou
             temp_Point = From2Dto3D(v, u, *(depth_image + v * 1300 + u));
 
             if(!available_point(temp_Point)) continue;
+            
             if(temp_Point.z > 1.5) continue;
+            //if(temp_Point.z > 1.5 || temp_Point.x > 30) continue;//只重建(稠密化)30m之内的物体
 
             search_point.x = temp_Point.x;
             search_point.y = temp_Point.y;
@@ -761,6 +771,12 @@ void OrganizeTool::denser_OpenMP(pcl::PointCloud<pcl::PointXYZI>::Ptr input_clou
                 if(nearest_point_cloud_ptr->size() >= 3)//点云中的点数>=3,可以组成三角形
                 {
                     surface_build(nearest_point_cloud_ptr, triangles_ptr);
+                    
+                    //若是不需要显示曲面重建结果，则注释
+                    /*
+                    //pragma omp critical
+                    test_view(triangles_ptr);
+                    */
                 }
             }
 
@@ -829,8 +845,9 @@ PclTestCore::PclTestCore(ros::NodeHandle &nh){
     pub_pseudo_points_ = nh.advertise<sensor_msgs::PointCloud2>("/pseudo_points", 10);
     pub_ground_points_ = nh.advertise<sensor_msgs::PointCloud2>("/ground_points", 10);
     pub_object_points_ = nh.advertise<sensor_msgs::PointCloud2>("/object_points", 10);
+    pub_additional_points_ = nh.advertise<sensor_msgs::PointCloud2>("/additional_points", 10);
     pub_dense_points_ = nh.advertise<sensor_msgs::PointCloud2>("/dense_points", 10);
-    //pub_triangle_points_ = nh.advertise<sensor_msgs::PointCloud2>("/triangle_points", 10);
+    pub_triangle_points_ = nh.advertise<sensor_msgs::PointCloud2>("/triangle_points", 10);
     pub_surface_polygon_ = nh.advertise<visualization_msgs::Marker>("/surface_polygon", 10);
 
     if(is_test_one_frame == true)
@@ -905,33 +922,33 @@ void PclTestCore::workFromFile()
     FILE *stream;
 
     /*
-    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0101_sync/velodyne_points/data/";
-    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0101_sync/predicted_depth/";
+    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0052_sync/velodyne_points/data/";
+    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0052_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/";
     OrgTool.row_of_depth_image = 375;
     OrgTool.col_of_depth_image = 1242;
     */
-
+    /*
     std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/velodyne_points/data/";
     std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/";
     OrgTool.row_of_depth_image = 374;
     OrgTool.col_of_depth_image = 1238;
+    */
     
-    /*
-    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0042_sync/velodyne_points/data/";
-    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0042_sync/predicted_depth/";
+    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0047_sync/velodyne_points/data/";
+    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0047_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/";
     OrgTool.row_of_depth_image = 376;
     OrgTool.col_of_depth_image = 1241;
-    */
+    
    
     OrgTool.read_calib(calib_file);
 
     struct dirent **namelist_bin,**namelist_txt;//文件名list
 
-    int num_of_file = std::min(scandir(cloud_file.c_str(), &namelist_bin, fileNameFilter_bin, alphasort),
-                               scandir(depth_file.c_str(), &namelist_txt, fileNameFilter_txt, alphasort));
+    int num_of_file = scandir(cloud_file.c_str(), &namelist_bin, fileNameFilter_bin, alphasort);
+    scandir(depth_file.c_str(), &namelist_txt, fileNameFilter_txt, alphasort);
 
     printf("num_of_file=%d\n",num_of_file);
 
@@ -976,23 +993,24 @@ void PclTestCore::workFromFile()
 
         OrgTool.eraseNAN(original_pc_ptr);//剔除NAN点
         //OrgTool.eraseOutlier(original_pc_ptr);//剔除离群点（地面以下的点，打到自身车体的点）
-
+        /*
         stream = fopen ((depth_file+std::string(namelist_txt[file_index]->d_name)).c_str(),"r");
         for (int i = 0; i < OrgTool.row_of_depth_image; i++)
             for (int j = 0; j < OrgTool.col_of_depth_image; j++)
                 fscanf(stream,"%lf",&depth_image[i][j]);
         fclose(stream);
-
+        */
         //OrgTool.order(original_pc_ptr,organized_pc_ptr);
 
         //OrgTool.showOneRay(organized_pc_ptr); //随机标出一条激光扫描到的点，若使用此函数请注释掉下面ground_remove、get_pseudo、denser三个函数的调用
 
         //OrgTool.ground_remove_bfs(organized_pc_ptr, ground_pc_ptr, object_pc_ptr);//bfs去除地面方法
-        ground_remove_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);//多重RANSAC去除地面方法
+        //ground_remove_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);//多重RANSAC去除地面方法
+        normal_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);//普通RANSAC去除地面方法
 
-        OrgTool.get_pseudo(&depth_image[0][0], pseudo_pc_ptr);
+        //OrgTool.get_pseudo(&depth_image[0][0], pseudo_pc_ptr);
 
-        OrgTool.denser(original_pc_ptr, dense_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
+        //OrgTool.denser(original_pc_ptr, dense_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
 
         //输出原点云
         sensor_msgs::PointCloud2 pub_original;   //声明输出的点云格式
@@ -1047,39 +1065,58 @@ void PclTestCore::test_one_frame()
     FILE *stream;
 
     /*
-    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0101_sync/velodyne_points/data/";
-    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0101_sync/predicted_depth/";
+    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0052_sync/velodyne_points/data/";
+    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/2011_09_26_drive_0052_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_26/";
+    OrgTool.read_calib(calib_file);
     OrgTool.row_of_depth_image = 375;
     OrgTool.col_of_depth_image = 1242;
     */
-
+    /*
     std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/velodyne_points/data/";
     std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/2011_09_29_drive_0004_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_09_29/";
+    OrgTool.read_calib(calib_file);
     OrgTool.row_of_depth_image = 374;
     OrgTool.col_of_depth_image = 1238;
-    
+    */
     /*
-    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0042_sync/velodyne_points/data/";
-    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0042_sync/predicted_depth/";
+    std::string cloud_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0047_sync/velodyne_points/data/";
+    std::string depth_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/2011_10_03_drive_0047_sync/predicted_depth/";
     std::string calib_file = "/media/song/程序磁盘/mouse/PSMNet/2011_10_03/";
+    OrgTool.read_calib(calib_file);
     OrgTool.row_of_depth_image = 376;
     OrgTool.col_of_depth_image = 1241;
     */
+    
+    std::string cloud_file = "/media/song/程序磁盘/3D_KITTI/data_object_velodyne/training/velodyne/";
+    std::string image_file = "/media/song/程序磁盘/3D_KITTI/image_2/training/image_2/";
+    std::string depth_file = "/media/song/程序磁盘/3D_KITTI/predicted_depth/training/";
+    std::string calib_file = "/media/song/程序磁盘/3D_KITTI/data_object_calib/training/calib/";
+    std::string dense_object_file = "/media/song/程序磁盘/3D_KITTI/dense_object_velodyne/training/";
+    std::string dense_full_file = "/media/song/程序磁盘/3D_KITTI/dense_full_velodyne/training/";
+    
 
-    OrgTool.read_calib(calib_file);
+    struct dirent **namelist_cloud, **namelist_depth, **namelist_calib, **namelist_image; //文件名list
 
-    struct dirent **namelist_bin,**namelist_txt;//文件名list
-
-    int num_of_file = std::min(scandir(cloud_file.c_str(), &namelist_bin, fileNameFilter_bin, alphasort),
-                               scandir(depth_file.c_str(), &namelist_txt, fileNameFilter_txt, alphasort));
+    int num_of_file = scandir(cloud_file.c_str(), &namelist_cloud, PclTestCore::fileNameFilter_bin, alphasort);
+    scandir(depth_file.c_str(), &namelist_depth, PclTestCore::fileNameFilter_txt, alphasort);
+    scandir(calib_file.c_str(), &namelist_calib, PclTestCore::fileNameFilter_txt, alphasort);
+    scandir(image_file.c_str(), &namelist_image, PclTestCore::fileNameFilter_png, alphasort);//若是生成连续帧视频，注释这1行
 
     printf("num_of_file=%d\n",num_of_file);
 
-    int file_index = 130; //测试第几帧
+    int file_index = 0; //测试第几帧
 
     printf("file_index=%d\n",file_index);
+
+    //若是生成连续帧视频，注释这6行
+    stream = fopen ((calib_file+std::string(namelist_calib[file_index]->d_name)).c_str(),"r");
+    OrgTool.read_calib_submission(stream);
+    fclose(stream);
+    cv::Mat Im = cv::imread((image_file+std::string(namelist_image[file_index]->d_name)).c_str());
+    OrgTool.row_of_depth_image = Im.rows;
+    OrgTool.col_of_depth_image = Im.cols;
 
     pcl::PointCloud<pcl::PointXYZI>::Ptr original_pc_ptr(new pcl::PointCloud<pcl::PointXYZI>);
 
@@ -1089,16 +1126,18 @@ void PclTestCore::test_one_frame()
 
     pcl::PointCloud<pcl::PointXYZI>::Ptr pseudo_pc_ptr(new pcl::PointCloud<pcl::PointXYZI>);
 
+    pcl::PointCloud<pcl::PointXYZI>::Ptr additional_pc_ptr(new pcl::PointCloud<pcl::PointXYZI>);
+
     pcl::PointCloud<pcl::PointXYZI>::Ptr dense_pc_ptr(new pcl::PointCloud<pcl::PointXYZI>);
 
     double depth_image[400][1300];
 
     // allocate 4 MB buffer (only ~130*4*4 KB are needed)
     int num = 1000000;
-
-    stream = fopen ((cloud_file+std::string(namelist_bin[file_index]->d_name)).c_str(),"rb");
+    
+    stream = fopen ((cloud_file+std::string(namelist_cloud[file_index]->d_name)).c_str(),"rb");
     num = fread(data,sizeof(float),num,stream)/4;
-
+    
     // pointers
     float *px = data+0;
     float *py = data+1;
@@ -1116,17 +1155,19 @@ void PclTestCore::test_one_frame()
     OrgTool.eraseNAN(original_pc_ptr);//剔除NAN点
     //OrgTool.eraseOutlier(original_pc_ptr);//剔除离群点（地面以下的点，打到自身车体的点）
 
-    stream = fopen ((depth_file+std::string(namelist_txt[file_index]->d_name)).c_str(),"r");
+    
+    stream = fopen ((depth_file+std::string(namelist_depth[file_index]->d_name)).c_str(),"r");
     for (int i = 0; i < OrgTool.row_of_depth_image; i++)
         for (int j = 0; j < OrgTool.col_of_depth_image; j++)
             fscanf(stream,"%lf",&depth_image[i][j]);
     fclose(stream);
-
+    
     ground_remove_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);
+    //normal_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);
 
-    OrgTool.get_pseudo(&depth_image[0][0], pseudo_pc_ptr);
+    //OrgTool.get_pseudo(&depth_image[0][0], pseudo_pc_ptr);
 
-    OrgTool.denser(object_pc_ptr, dense_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
+    OrgTool.denser_OpenMP(object_pc_ptr, additional_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
 
     //输出原点云
     sensor_msgs::PointCloud2 pub_original;   //声明输出的点云格式
@@ -1148,17 +1189,23 @@ void PclTestCore::test_one_frame()
     pcl::toROSMsg(*pseudo_pc_ptr, pub_pseudo);
     pub_pseudo.header.frame_id = "/velodyne";
     
+    //输出添加的additional点云
+    sensor_msgs::PointCloud2 pub_additional;   //声明输出的点云格式
+    pcl::toROSMsg(*additional_pc_ptr, pub_additional);
+    pub_additional.header.frame_id = "/velodyne";
+
     //输出稠密化denser点云
-    sensor_msgs::PointCloud2 pub_dense;   //声明输出的点云格式
+    *dense_pc_ptr = *original_pc_ptr + *additional_pc_ptr;
+    sensor_msgs::PointCloud2 pub_dense; //声明输出的点云格式
     pcl::toROSMsg(*dense_pc_ptr, pub_dense);
     pub_dense.header.frame_id = "/velodyne";
 
-    /*
+    
     //输出曲面重建triangle点云
     sensor_msgs::PointCloud2 pub_triangle;   //声明输出的点云格式
     pcl::toROSMsg(*(OrgTool.triangles_cloud_ptr), pub_triangle);
     pub_triangle.header.frame_id = "/velodyne";
-    */
+    
 
     //输出曲面重建的曲面 和 (v=296,u=150)像素对应的射线
     OrgTool.pub_surface.ns = "my_namespace";
@@ -1167,8 +1214,8 @@ void PclTestCore::test_one_frame()
     OrgTool.pub_surface.action = visualization_msgs::Marker::ADD;
     OrgTool.pub_surface.pose.orientation.w = 1.0;
     OrgTool.pub_surface.scale.x = OrgTool.pub_surface.scale.y = OrgTool.pub_surface.scale.z = 1;
-    OrgTool.pub_surface.color.a = 1.0;
-    OrgTool.pub_surface.color.r = 1.0;
+    //OrgTool.pub_surface.color.a = 1.0;
+    //OrgTool.pub_surface.color.r = 1.0;
     OrgTool.pub_surface.header.frame_id = "/velodyne";
 
     OrgTool.pub_line.ns = "my_namespace";
@@ -1177,8 +1224,8 @@ void PclTestCore::test_one_frame()
     OrgTool.pub_line.action = visualization_msgs::Marker::ADD;
     OrgTool.pub_line.pose.orientation.w = 1.0;
     OrgTool.pub_line.scale.x = 0.01;//线宽
-    OrgTool.pub_line.color.a = 1.0;
-    OrgTool.pub_line.color.b = 1.0;
+    //OrgTool.pub_line.color.a = 1.0;
+    //OrgTool.pub_line.color.b = 1.0;
     OrgTool.pub_line.header.frame_id = "/velodyne";
     Point3 line_start = OrgTool.From2Dto3D(296, 150, 8), line_end = OrgTool.From2Dto3D(296, 150, 100);
     geometry_msgs::Point p;
@@ -1207,11 +1254,14 @@ void PclTestCore::test_one_frame()
             pub_pseudo.header.stamp = ros::Time::now();
             pub_pseudo_points_.publish(pub_pseudo);
 
+            pub_additional.header.stamp = ros::Time::now();
+            pub_additional_points_.publish(pub_additional);
+
             pub_dense.header.stamp = ros::Time::now();
             pub_dense_points_.publish(pub_dense);
 
-            //pub_triangle.header.stamp = ros::Time::now();
-            //pub_triangle_points_.publish(pub_triangle);
+            pub_triangle.header.stamp = ros::Time::now();
+            pub_triangle_points_.publish(pub_triangle);
 
             OrgTool.pub_surface.header.stamp = ros::Time::now();
             OrgTool.pub_line.header.stamp = ros::Time::now();

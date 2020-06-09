@@ -137,8 +137,9 @@ class PclTestCore
     ros::Publisher pub_ground_points_;    //创建了一个发布地面点云的节点
     ros::Publisher pub_object_points_;    //创建了一个发布非地面点云的节点
     ros::Publisher pub_pseudo_points_;    //创建了一个发布伪点云的节点
+    ros::Publisher pub_additional_points_;//创建了一个发布添加的稠密点云的节点
     ros::Publisher pub_dense_points_;     //创建了一个发布稠密点云的节点    
-    //ros::Publisher pub_triangle_points_;  //创建了一个发布triangle点云的节点
+    ros::Publisher pub_triangle_points_;  //创建了一个发布triangle点云的节点
     ros::Publisher pub_surface_polygon_;     //创建了一个发布三角形面的节点
 
     void point_cb(const sensor_msgs::PointCloud2ConstPtr& in_cloud);

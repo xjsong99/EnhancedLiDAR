@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -58,16 +58,6 @@ pcl/filters/extract_indices.h
 geometry.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/include/geometry.h
 
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/include/submission.h
-cstdio
--
-algorithm
--
-EnhancedLiDAR_core.h
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/include/EnhancedLiDAR_core.h
-ground_remove_RANSAC.h
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/include/ground_remove_RANSAC.h
-
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_core.cpp
 utility
 -
@@ -83,14 +73,6 @@ EnhancedLiDAR_core.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_core.h
 ground_remove_RANSAC.h
 /home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/ground_remove_RANSAC.h
-
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_node.cpp
-submission.h
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/submission.h
-EnhancedLiDAR_core.h
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/EnhancedLiDAR_core.h
-geometry.h
-/home/song/EnhancedLiDAR/src/EnhancedLiDAR/src/geometry.h
 
 /opt/ros/kinetic/include/boost_161_condition_variable.h
 boost/thread/detail/platform.hpp

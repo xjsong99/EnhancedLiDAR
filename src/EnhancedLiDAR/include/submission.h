@@ -10,13 +10,24 @@ void submission(int start_index)
     float *data = (float*)malloc(1000000*sizeof(float));
     FILE *stream;
     
+    /*
+    std::string cloud_file = "/media/song/程序磁盘/3D_KITTI/data_object_velodyne/testing/velodyne/";
+    std::string image_file = "/media/song/程序磁盘/3D_KITTI/image_2/testing/image_2/";
+    std::string depth_file = "/media/song/程序磁盘/3D_KITTI/predicted_depth/testing/";
+    std::string calib_file = "/media/song/程序磁盘/3D_KITTI/data_object_calib/testing/calib/";
+    std::string dense_object_file = "/media/song/程序磁盘/3D_KITTI/dense_object_velodyne/testing/";
+    std::string dense_full_file = "/media/song/程序磁盘/3D_KITTI/dense_full_velodyne/testing/";
+    */
+
+    
     std::string cloud_file = "/media/song/程序磁盘/3D_KITTI/data_object_velodyne/training/velodyne/";
     std::string image_file = "/media/song/程序磁盘/3D_KITTI/image_2/training/image_2/";
     std::string depth_file = "/media/song/程序磁盘/3D_KITTI/predicted_depth/training/";
     std::string calib_file = "/media/song/程序磁盘/3D_KITTI/data_object_calib/training/calib/";
     std::string dense_object_file = "/media/song/程序磁盘/3D_KITTI/dense_object_velodyne/training/";
-    std::string dense_full_file = "/media/song/程序磁盘/3D_KITTI/dense_full_velodyne/training/";
-
+    std::string dense_full_file = "/media/song/数据磁盘/dense_velodyne_30/training/";
+    
+   
     struct dirent **namelist_cloud, **namelist_depth, **namelist_calib, **namelist_image; //文件名list
 
     int num_of_file = scandir(cloud_file.c_str(), &namelist_cloud, PclTestCore::fileNameFilter_bin, alphasort);
@@ -25,6 +36,7 @@ void submission(int start_index)
     scandir(image_file.c_str(), &namelist_image, PclTestCore::fileNameFilter_png, alphasort);
 
     printf("num_of_file=%d\n",num_of_file);
+    int kasenum[4] = {0, 0, 0, 0};
 
     for (int file_index = start_index; file_index < num_of_file; file_index++)
     {
@@ -76,13 +88,19 @@ void submission(int start_index)
                 fscanf(stream,"%lf",&depth_image[i][j]);
         fclose(stream);
 
-        ground_remove_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);
+        int kase=ground_remove_RANSAC(original_pc_ptr, ground_pc_ptr, object_pc_ptr);
+        kasenum[kase]++;
+        printf("Condition : %d\n",kase);
+        continue;
 
         OrgTool.denser_OpenMP(object_pc_ptr, dense_pc_ptr, &depth_image[0][0]);//用深度进行点云稠密化
 
+        int num_of_point = 0;
+        /*
+        //若不需要生成无地面稠密化点云，则注释
         *object_pc_ptr = *object_pc_ptr + *dense_pc_ptr;
         stream = fopen ((dense_object_file+std::string(namelist_cloud[file_index]->d_name)).c_str(),"wb");
-        int num_of_point = object_pc_ptr->size();
+        num_of_point = object_pc_ptr->size();
         for (int i = 0; i < num_of_point; i++)
         {
             fwrite(&(object_pc_ptr->points.at(i).x), sizeof(float), 1, stream);
@@ -91,6 +109,7 @@ void submission(int start_index)
             fwrite(&(object_pc_ptr->points.at(i).intensity), sizeof(float), 1, stream);
         }
         fclose(stream);
+        */
 
         *original_pc_ptr = *original_pc_ptr + *dense_pc_ptr;
         stream = fopen ((dense_full_file+std::string(namelist_cloud[file_index]->d_name)).c_str(),"wb");
@@ -105,7 +124,10 @@ void submission(int start_index)
         fclose(stream);
     }
 
-
+    printf("Zero_condition: %d\n",kasenum[0]);
+    printf("First_condition: %d\n",kasenum[1]);
+    printf("Second_condition: %d\n",kasenum[2]);
+    printf("Third_condition: %d\n",kasenum[3]);
 
     return;
 }
