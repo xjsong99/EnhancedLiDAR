@@ -2,27 +2,28 @@
 Enhance LiDAR pointcloud based on stereo image.
 
 ## Flow diagram
-![flow diagram](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/flow%20diagram.png)
+![flow diagram](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/flow_diagram.png)
 
 ## Result
-### original point
-It is the pointcloud given by HDL-64E from KITTI database.
-![original](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/original_point.png)
+### Ground remove
+The following picture shows the ground remove results based on iterated RANSAC method we designed and normal RANSAC method.
+![ground remove](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/ground_remove.png)
+The iterated RANSAC flow diagram is shown below.
+![iterated RANSAC](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/iterated_RANSAC.png)
 
-### ground point
-It is the ground pointcloud extracted by RANSAC.
-![ground](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/ground_point.png)
+### Enhanced LiDAR point cloud
+The enhanced LiDAR point cloud with higher density is shown below. 
+![point cloud](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/enhanced_pointcloud.png)
 
-### object point
-It is the object pointcloud which doesn't contain ground points.
-![object](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/object_point.png)
 
-### pseudo point
-It is the pseudo-LiDAR pointcloud based on stereo image depth estimation.
-![pseudo](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/pseudo_point.png)
+## Experiment on 3D object detection
+1. Method: AVOD and AVOD-FPN
+2. Results:
+![3D detection](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/3D_detection.png)
+3. PR curve
+<center> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_3D &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_BEV</center>
+<div align="center">
 
-### denser point
-It is the final result pointcloud (only objects) with higher density.
-The color points come from original object pointcloud while the white points represent the denser points produced by this algorithm.
-![denser1](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/fusion_point.png)
-![denser1](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/fusion_point2.png)
+<img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_3D.png" height="300px" ><img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_BEV.png" height="300px" >
+
+</div>
