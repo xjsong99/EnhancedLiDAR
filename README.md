@@ -33,7 +33,7 @@ The enhanced LiDAR point cloud with higher density is shown below. The blue poin
 
 </div>
 
-<font size=2>
+<font size="2">
 Supported by: National Training Program of Innovation and Entrepreneurship for Undergraduates<br/>
 Author: Xujie Song, Sunhao Dai, Shutao Zhan, Chunyu Lin<br/>
 Contact: songxj@bjtu.edu.cn
