@@ -9,13 +9,12 @@ Enhance LiDAR pointcloud based on stereo image.
 The following picture shows the ground remove results based on iterated RANSAC method we designed and normal RANSAC method.
 ![ground remove](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/ground_remove.png)
 The iterated RANSAC flow diagram is shown below.<br/>
-<div align=center>![iterated RANSAC](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/iterated_RANSAC.png)
-<img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/iterated_RANSAC.png" height = "600px" div align=center />
+<img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/iterated_RANSAC.png" height = "550px" div align=center />
 
 ### Enhanced LiDAR point cloud
 The enhanced LiDAR point cloud with higher density is shown below. 
-![point cloud](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/enhanced_pointcloud.png)
-
+<div align=center>![point cloud](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/enhanced_pointcloud.png)
+<div align=left>
 
 ## Experiment on 3D object detection
 1. Method: AVOD and AVOD-FPN
