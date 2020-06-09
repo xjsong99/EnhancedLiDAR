@@ -8,7 +8,7 @@ Enhance LiDAR pointcloud based on stereo image.
 ### Ground remove
 The following picture shows the ground remove results based on iterated RANSAC method we designed and normal RANSAC method.
 ![ground remove](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/ground_remove.png)
-The iterated RANSAC flow diagram is shown below.<br/>
+The flow diagram of iterated RANSAC is shown below.<br/>
 <div align=center>
 <img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/iterated_RANSAC.png" height = "550px">
 </div>
