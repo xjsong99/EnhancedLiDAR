@@ -28,10 +28,8 @@ The enhanced LiDAR point cloud with higher density is shown below. The blue poin
 3. PR curves
 <center> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_3D &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_BEV</center>
 <div align="center">
-
 <img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_3D.png" height="300px" ><img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_BEV.png" height="300px" >
-
 </div>
-4. Checkpoints & log file
-Download link：https://pan.baidu.com/s/1QcXrRVM3rLc-rh0WbOpOFQ 
-Key：5vq8
+4. Checkpoints & log file</br>
+Download link：https://pan.baidu.com/s/1QcXrRVM3rLc-rh0WbOpOFQ </br>
+Key：5vq8</br>
