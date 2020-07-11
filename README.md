@@ -26,7 +26,9 @@ The enhanced LiDAR point cloud with higher density is shown below. The blue poin
 2. Results on val dataset:
 ![3D detection](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/3D_detection.png)
 3. PR curves
-<center> &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_3D &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_BEV</center>
+<div align="center">
+<center>Car_3D &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_BEV</center>
+</div>
 <div align="center">
 <img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_3D.png" height="280px" ><img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_BEV.png" height="280px" >
 </div>
