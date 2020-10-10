@@ -22,17 +22,18 @@ The enhanced LiDAR point cloud with higher density is shown below. The blue poin
 
 
 ## Experiment on 3D object detection
-1. Methods used: AVOD and AVOD-FPN
-2. Results on val dataset:
+1. Dataset: KITTI (http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d)
+2. Methods used: AVOD and AVOD-FPN
+3. Results on val dataset:
 ![3D detection](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/3D_detection.png)
-3. PR curves</br>
+4. PR curves</br>
 <div align="center">
 &emsp;&emsp;Car_3D &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; Car_BEV
 
 <img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_3D.png" height="280px" ><img src="https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/AP_BEV.png" height="280px" >
 </div>
 
-4. Checkpoints & log file</br>
+5. Checkpoints & log file</br>
 Download link：https://pan.baidu.com/s/1QcXrRVM3rLc-rh0WbOpOFQ </br>
 Key：5vq8
  
