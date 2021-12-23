@@ -1,6 +1,8 @@
 # EnhancedLiDAR
 Enhance LiDAR pointcloud based on stereo image.
 
+You can obtain the paper by click [download](https://kns.cnki.net/kcms/detail/detail.aspx?dbcode=CJFD&dbname=CJFDLAST2021&filename=ZGTB202105018&uniplatform=NZKPT&v=nEbt5HShUQs1edh3H3fLtrdJJSyKvbHdMfz8d2Ha0gq8ge5WsoLeSs2aFYc2YA3o).
+
 ## Flow diagram
 ![flow diagram](https://github.com/jerry99s/EnhancedLiDAR/blob/master/pic/flow_diagram.png)
 
